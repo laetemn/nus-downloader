@@ -24,21 +24,20 @@
 
 
 using System;
-using System.Windows.Forms;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Net;
-using System.Security.Cryptography;
-using System.Xml;
-using System.Drawing;
-using System.Text.RegularExpressions;
-using System.ComponentModel;
-using System.Threading;
 using System.Text;
-using System.Diagnostics;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Windows.Forms;
+using System.Xml;
 
 namespace NUS_Downloader
 {
-     partial class Form1 : Form
+    partial class Form1 : Form
     {
         private readonly string CURRENT_DIR = Directory.GetCurrentDirectory();
 
@@ -134,7 +133,6 @@ namespace NUS_Downloader
             // CLI mode, inspired and taken from wiiNinja's mod.
 
             // Initialize the checkboxes and radio boxes
-            packbox.Checked = false;  // Create wad - default OFF
             localuse.Checked = true; // Use local content if already downloaded - default ON
             decryptbox.Checked = false;
             keepenccontents.Checked = false;
@@ -185,9 +183,7 @@ namespace NUS_Downloader
 
                         default:
                             // Any other arguments beyond the 2nd one are considered optional
-                            if (args[i] == "packwad")
-                                packbox.Checked = true;
-                            else if (args[i] == "localuse")
+                            if (args[i] == "localuse")
                                 localuse.Checked = true;
                             else if (args[i] == "decrypt")
                                 decryptbox.Checked = true;
@@ -198,9 +194,6 @@ namespace NUS_Downloader
                             break;
                     }
                 }
-
-                // Do this to set the wad file name
-                UpdatePackedName();
 
                 // Call to get the files from server
                 NUSDownloader_DoWork(null, null);
@@ -215,7 +208,6 @@ namespace NUS_Downloader
             this.MaximumSize = this.MinimumSize = this.Size; // Lock size down PATCHOW :D
             if (Type.GetType("Mono.Runtime") != null)
             {
-                saveaswadbtn.Text = "Save As";
                 clearButton.Text = "Clear";
                 keepenccontents.Text = "Keep Enc. Contents";
                 clearButton.Left -= 41;
@@ -248,7 +240,7 @@ namespace NUS_Downloader
             // Scripts BGLoader
             this.scriptsWorker = new BackgroundWorker();
             this.scriptsWorker.DoWork += new DoWorkEventHandler(OrganizeScripts);
-            this.scriptsWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(scriptsWorker_RunWorkerCompleted);
+            this.scriptsWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(ScriptsWorker_RunWorkerCompleted);
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -474,7 +466,7 @@ namespace NUS_Downloader
             return Attributes[0].Value;
         }*/
 
-        private void extrasMenuButton_Click(object sender, EventArgs e)
+        private void ExtrasMenuButton_Click(object sender, EventArgs e)
         {
             // Show extras menu
             extrasStrip.Text = "Showing";
@@ -482,9 +474,11 @@ namespace NUS_Downloader
 
             
             {
-                System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
-                timer.Interval = 52;
-                timer.Tick += new EventHandler(contextmenusTimer_Tick);
+                System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer()
+                {
+                    Interval = 52
+                };
+                timer.Tick += new EventHandler(ContextmenusTimer_Tick);
                 timer.Start();
             }
         }
@@ -495,9 +489,11 @@ namespace NUS_Downloader
         private void LoadTitleFromTMD()
         {
             // Show dialog for opening TMD file...
-            OpenFileDialog opentmd = new OpenFileDialog();
-            opentmd.Filter = "TMD Files|*tmd*";
-            opentmd.Title = "Open TMD";
+            OpenFileDialog opentmd = new OpenFileDialog()
+            {
+                Filter = "TMD Files|*tmd*",
+                Title = "Open TMD"
+            };
             if (opentmd.ShowDialog() != DialogResult.Cancel)
             {
                 libWiiSharp.TMD tmdLocal = new libWiiSharp.TMD();
@@ -623,7 +619,7 @@ namespace NUS_Downloader
                 WriteStatus("Please enter a Title ID!", errorcolor);
                 return;
             }
-            else if (!(packbox.Checked) && !(decryptbox.Checked) && !(keepenccontents.Checked))
+            else if (!(decryptbox.Checked) && !(keepenccontents.Checked))
             {
                 // Prevent pointless running by n00bs.
                 WriteStatus("Running with your current settings will produce no output!", errorcolor);
@@ -699,19 +695,14 @@ namespace NUS_Downloader
                 nusClient.SetToDSiServer();
 
             // Events
-            nusClient.Debug += new EventHandler<libWiiSharp.MessageEventArgs>(nusClient_Debug);
-            nusClient.Progress += new EventHandler<ProgressChangedEventArgs>(nusClient_Progress);
+            nusClient.Debug += new EventHandler<libWiiSharp.MessageEventArgs>(NusClient_Debug);
+            nusClient.Progress += new EventHandler<ProgressChangedEventArgs>(NusClient_Progress);
 
             libWiiSharp.StoreType[] storeTypes = new libWiiSharp.StoreType[3];
-            if (packbox.Checked) storeTypes[0] = libWiiSharp.StoreType.WAD; else storeTypes[0] = libWiiSharp.StoreType.Empty;
             if (decryptbox.Checked) storeTypes[1] = libWiiSharp.StoreType.DecryptedContent; else storeTypes[1] = libWiiSharp.StoreType.Empty;
             if (keepenccontents.Checked) storeTypes[2] = libWiiSharp.StoreType.EncryptedContent; else storeTypes[2] = libWiiSharp.StoreType.Empty;
 
-            string wadName;
-            if (String.IsNullOrEmpty(WAD_Saveas_Filename))
-                wadName = wadnamebox.Text;
-            else
-                wadName = WAD_Saveas_Filename;
+            string wadName = WAD_Saveas_Filename;
 
             try
             {
@@ -821,12 +812,12 @@ namespace NUS_Downloader
 
         }
 
-        void nusClient_Progress(object sender, ProgressChangedEventArgs e)
+        void NusClient_Progress(object sender, ProgressChangedEventArgs e)
         {
             dlprogress.Value = e.ProgressPercentage;
         }
 
-        void nusClient_Debug(object sender, libWiiSharp.MessageEventArgs e)
+        void NusClient_Debug(object sender, libWiiSharp.MessageEventArgs e)
         {
             WriteStatus(e.Message);
         }
@@ -843,35 +834,15 @@ namespace NUS_Downloader
                 dlprogress.ShowInTaskbar = false;
         }
 
-        private void packbox_CheckedChanged(object sender, EventArgs e)
-        {
-            if (packbox.Checked == true)
-            {
-                wadnamebox.Enabled = true;
-                saveaswadbtn.Enabled = true;
-                // Change WAD name if applicable
-                UpdatePackedName();
-            }
-            else
-            {
-                wadnamebox.Enabled = false;
-                saveaswadbtn.Enabled = false;
-                wadnamebox.Text = String.Empty;
-                if (iosPatchCheckbox.Checked)
-                    iosPatchCheckbox.Checked = false;
-            }
-        }
-
-        private void titleidbox_TextChanged(object sender, EventArgs e)
+        private void Titleidbox_TextChanged(object sender, EventArgs e)
         {
             titleidbox.Text = titleidbox.Text.ToUpper();
-            UpdatePackedName();
             EnablePatchIOSBox();
         }
 
-        private void titleversion_TextChanged(object sender, EventArgs e)
+        private void Titleversion_TextChanged(object sender, EventArgs e)
         {
-            UpdatePackedName();
+
         }
 
         private void EnablePatchIOSBox()
@@ -919,14 +890,16 @@ namespace NUS_Downloader
 
             //if (!e.Equals(EventArgs.Empty))
             {
-                System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
-                timer.Interval = 50;
-                timer.Tick += new EventHandler(contextmenusTimer_Tick);
+                System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer()
+                {
+                    Interval = 50
+                };
+                timer.Tick += new EventHandler(ContextmenusTimer_Tick);
                 timer.Start();
             }
         }
 
-        void contextmenusTimer_Tick(object sender, EventArgs e)
+        void ContextmenusTimer_Tick(object sender, EventArgs e)
         {
             if (SystemMenuList.Pressed || IOSMenuList.Pressed || VCMenuList.Pressed || WiiWareMenuList.Pressed
                 || RegionCodesList.Pressed || scriptsLocalMenuEntry.Pressed || scriptsDatabaseToolStripMenuItem.Pressed
@@ -947,7 +920,7 @@ namespace NUS_Downloader
                 databaseStrip.Close();
                 scriptsStrip.Close();
                 extrasStrip.Close();
-                scriptsbutton_Click(sender, EventArgs.Empty);
+                Scriptsbutton_Click(sender, EventArgs.Empty);
                 ((System.Windows.Forms.Timer)sender).Stop();
             }
 
@@ -956,7 +929,7 @@ namespace NUS_Downloader
                 databaseStrip.Close();
                 scriptsStrip.Close();
                 extrasStrip.Close();
-                extrasMenuButton_Click(sender, EventArgs.Empty);
+                ExtrasMenuButton_Click(sender, EventArgs.Empty);
                 ((System.Windows.Forms.Timer)sender).Stop();
             }
 
@@ -1245,46 +1218,7 @@ namespace NUS_Downloader
 
             //menulist.DropDownItems.Add(additionitem);
         }
-
-        /// <summary>
-        /// Mods WAD names to be official.
-        /// </summary>
-        /// <param name="titlename">The titlename.</param>
-        public string OfficialWADNaming(string titlename)
-        {
-            if (titlename == "MIOS")
-                titlename = "RVL-mios-[v].wad";
-            else if (titlename.Contains("IOS"))
-                titlename = titlename + "-64-[v].wad";
-            else if (titlename.Contains("System Menu"))
-                titlename = "RVL-WiiSystemmenu-[v].wad";
-            else if (titlename.Contains("System Menu"))
-                titlename = "RVL-WiiSystemmenu-[v].wad";
-            else if (titlename == "BC")
-                titlename = "RVL-bc-[v].wad";
-            else if (titlename.Contains("Mii Channel"))
-                titlename = "RVL-NigaoeNR-[v].wad";
-            else if (titlename.Contains("Shopping Channel"))
-                titlename = "RVL-Shopping-[v].wad";
-            else if (titlename.Contains("Weather Channel"))
-                titlename = "RVL-Weather-[v].wad";
-            else
-                titlename = titlename + "-NUS-[v].wad";
-
-            if (wadnamebox.InvokeRequired)
-            {
-                OfficialWADNamingCallback ownc = new OfficialWADNamingCallback(OfficialWADNaming);
-                wadnamebox.Invoke(ownc, new object[] { titlename });
-                return titlename;
-            }
-
-            wadnamebox.Text = titlename;
-
-            if (titleversion.Text != "")
-                wadnamebox.Text = wadnamebox.Text.Replace("[v]", "v" + titleversion.Text);
-
-            return titlename;
-        }
+        
          /*
         private void upditem_itemclicked(object sender, ToolStripItemClickedEventArgs e)
         {
@@ -1331,7 +1265,6 @@ namespace NUS_Downloader
                 if ((e.ClickedItem.Image) == (Database.orange) || (e.ClickedItem.Image) == (Database.redorange))
                 {
                     WriteStatus("Note: This title has no ticket and cannot be packed/decrypted!");
-                    packbox.Checked = false;
                     decryptbox.Checked = false;
                 }
 
@@ -1367,7 +1300,6 @@ namespace NUS_Downloader
                 if ((e.ClickedItem.OwnerItem.Image) == (Database.orange) || (e.ClickedItem.OwnerItem.Image) == (Database.redorange))
                 {
                     WriteStatus("Note: This title has no ticket and cannot be packed/decrypted!");
-                    packbox.Checked = false;
                     decryptbox.Checked = false;
                 }
 
@@ -1423,7 +1355,6 @@ namespace NUS_Downloader
                     if ((e.ClickedItem.OwnerItem.OwnerItem.Image) == (Database.orange) || (e.ClickedItem.OwnerItem.OwnerItem.Image) == (Database.redorange))
                     {
                         WriteStatus("Note: This title has no ticket and cannot be packed/decrypted!");
-                        packbox.Checked = false;
                         decryptbox.Checked = false;
                     }
 
@@ -1448,7 +1379,6 @@ namespace NUS_Downloader
                     if ((e.ClickedItem.OwnerItem.Image) == (Database.orange) || (e.ClickedItem.OwnerItem.Image) == (Database.redorange))
                     {
                         WriteStatus("Note: This title has no ticket and cannot be packed/decrypted!");
-                        packbox.Checked = false;
                         decryptbox.Checked = false;
                     }
 
@@ -1595,9 +1525,7 @@ namespace NUS_Downloader
                 titleversion.Enabled = disabledStorage[2];
                 Extrasbtn.Enabled = disabledStorage[3];
                 databaseButton.Enabled = disabledStorage[4];
-                packbox.Enabled = disabledStorage[5];
                 localuse.Enabled = disabledStorage[6];
-                saveaswadbtn.Enabled = disabledStorage[7];
                 decryptbox.Enabled = disabledStorage[8];
                 keepenccontents.Enabled = disabledStorage[9];
                 scriptsbutton.Enabled = disabledStorage[10];
@@ -1611,9 +1539,7 @@ namespace NUS_Downloader
                 disabledStorage[2] = titleversion.Enabled;
                 disabledStorage[3] = Extrasbtn.Enabled;
                 disabledStorage[4] = databaseButton.Enabled;
-                disabledStorage[5] = packbox.Enabled;
                 disabledStorage[6] = localuse.Enabled;
-                disabledStorage[7] = saveaswadbtn.Enabled;
                 disabledStorage[8] = decryptbox.Enabled;
                 disabledStorage[9] = keepenccontents.Enabled;
                 disabledStorage[10] = scriptsbutton.Enabled;
@@ -1625,9 +1551,7 @@ namespace NUS_Downloader
                 titleversion.Enabled = enabled;
                 Extrasbtn.Enabled = enabled;
                 databaseButton.Enabled = enabled;
-                packbox.Enabled = enabled;
                 localuse.Enabled = enabled;
-                saveaswadbtn.Enabled = enabled;
                 decryptbox.Enabled = enabled;
                 keepenccontents.Enabled = enabled;
                 scriptsbutton.Enabled = enabled;
@@ -1670,38 +1594,6 @@ namespace NUS_Downloader
         }
 
         /// <summary>
-        /// Updates the name of the packed WAD in the textbox.
-        /// </summary>
-        private void UpdatePackedName()
-        {
-            // Change WAD name if applicable
-
-            string title_name = null;
-
-            if ((titleidbox.Enabled == true) && (packbox.Checked == true))
-            {
-                if (titleversion.Text != "")
-                {
-                    wadnamebox.Text = titleidbox.Text + "-NUS-v" + titleversion.Text + ".wad";
-                }
-                else
-                {
-                    wadnamebox.Text = titleidbox.Text + "-NUS-[v]" + titleversion.Text + ".wad";
-                }
-
-                if ((File.Exists("database.xml") == true) && (titleidbox.Text.Length == 16))
-                    title_name = NameFromDatabase(titleidbox.Text);
-
-                if (title_name != null)
-                {
-                    wadnamebox.Text = wadnamebox.Text.Replace(titleidbox.Text, title_name);
-                    OfficialWADNaming(title_name);
-                }
-            }
-            wadnamebox.Text = RemoveIllegalCharacters(wadnamebox.Text);
-        }
-
-        /// <summary>
         /// Determines whether OS is win7.
         /// </summary>
         /// <returns>
@@ -1738,16 +1630,19 @@ namespace NUS_Downloader
                 // Proxy
                 if (!(String.IsNullOrEmpty(proxy_url)))
                 {
-                    WebProxy customproxy = new WebProxy();
-                    customproxy.Address = new Uri(proxy_url);
-                    if (String.IsNullOrEmpty(proxy_usr))
+                WebProxy customproxy = new WebProxy()
+                {
+                    Address = new Uri(proxy_url)
+                };
+                if (String.IsNullOrEmpty(proxy_usr))
                         customproxy.UseDefaultCredentials = true;
                     else
                     {
-                        NetworkCredential cred = new NetworkCredential();
-                        cred.UserName = proxy_usr;
-
-                        if (!(String.IsNullOrEmpty(proxy_pwd)))
+                    NetworkCredential cred = new NetworkCredential()
+                    {
+                        UserName = proxy_usr
+                    };
+                    if (!(String.IsNullOrEmpty(proxy_pwd)))
                             cred.Password = proxy_pwd;
 
                         customproxy.Credentials = cred;
@@ -1877,7 +1772,7 @@ namespace NUS_Downloader
             }
         }
 
-        private void updateDatabaseToolStripMenuItem_Click(object sender, EventArgs e)
+        private void UpdateDatabaseToolStripMenuItem_Click(object sender, EventArgs e)
         {
             statusbox.Text = "";
             WriteStatus("Updating your databases from Wiibrew/DSibrew");
@@ -1895,7 +1790,7 @@ namespace NUS_Downloader
             dbDsiFetcher.RunWorkerAsync(wiibrewValues[1]);
         }
 
-        private void loadInfoFromTMDToolStripMenuItem_Click(object sender, EventArgs e)
+        private void LoadInfoFromTMDToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Extras menu -> Load TMD...
             LoadTitleFromTMD();
@@ -1919,15 +1814,18 @@ namespace NUS_Downloader
             // Proxy
             if (!(String.IsNullOrEmpty(proxy_url)))
             {
-                WebProxy customproxy = new WebProxy();
-                customproxy.Address = new Uri(proxy_url);
+                WebProxy customproxy = new WebProxy()
+                {
+                    Address = new Uri(proxy_url)
+                };
                 if (String.IsNullOrEmpty(proxy_usr))
                     customproxy.UseDefaultCredentials = true;
                 else
                 {
-                    NetworkCredential cred = new NetworkCredential();
-                    cred.UserName = proxy_usr;
-
+                    NetworkCredential cred = new NetworkCredential()
+                    {
+                        UserName = proxy_usr
+                    };
                     if (!(String.IsNullOrEmpty(proxy_pwd)))
                         cred.Password = proxy_pwd;
 
@@ -1977,7 +1875,7 @@ namespace NUS_Downloader
             }
         }
 
-        private void emulateUpdate_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        private void EmulateUpdate_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
             // Begin Wii System Update
             statusbox.Text = "";
@@ -2167,12 +2065,6 @@ namespace NUS_Downloader
             return null;
         }
 
-        private void packbox_EnabledChanged(object sender, EventArgs e)
-        {
-            saveaswadbtn.Enabled = packbox.Enabled;
-            //deletecontentsbox.Enabled = packbox.Enabled;
-        }
-
         private void SaveProxyBtn_Click(object sender, EventArgs e)
         {
             if ((String.IsNullOrEmpty(ProxyURL.Text)) && (String.IsNullOrEmpty(ProxyUser.Text)) &&
@@ -2224,7 +2116,7 @@ namespace NUS_Downloader
             ProxyVerifyBox.Select();
         }
 
-        private void proxySettingsToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ProxySettingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Check for Proxy Settings file...
             if (File.Exists(Path.Combine(CURRENT_DIR, "proxy.txt")) == true)
@@ -2260,12 +2152,14 @@ namespace NUS_Downloader
                             " If you have an alternate port for accessing your proxy, add ':' followed by the port.");
         }
 
-        private void loadNUSScriptToolStripMenuItem_Click(object sender, EventArgs e)
+        private void LoadNUSScriptToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Open a NUS script.
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Multiselect = false;
-            ofd.Filter = "NUS Scripts|*.nus|All Files|*.*";
+            OpenFileDialog ofd = new OpenFileDialog()
+            {
+                Multiselect = false,
+                Filter = "NUS Scripts|*.nus|All Files|*.*"
+            };
             if (Directory.Exists(Path.Combine(CURRENT_DIR, "scripts")))
                 ofd.InitialDirectory = Path.Combine(CURRENT_DIR, "scripts");
             ofd.Title = "Load a NUS/Wiimpersonator script.";
@@ -2373,7 +2267,7 @@ namespace NUS_Downloader
            WriteStatus("Script completed!");*/
        }
 
-        private void scriptsbutton_Click(object sender, EventArgs e)
+        private void Scriptsbutton_Click(object sender, EventArgs e)
         {
             // Show scripts menu
             scriptsStrip.Text = "Showing";
@@ -2381,9 +2275,11 @@ namespace NUS_Downloader
 
             //if (!e.Equals(EventArgs.Empty))
             {
-                System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
-                timer.Interval = 51;
-                timer.Tick += new EventHandler(contextmenusTimer_Tick);
+                System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer()
+                {
+                    Interval = 51
+                };
+                timer.Tick += new EventHandler(ContextmenusTimer_Tick);
                 timer.Start();
             }
         }
@@ -2403,7 +2299,7 @@ namespace NUS_Downloader
             }
         }
 
-        void scriptsWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        void ScriptsWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             scriptsLocalMenuEntry.Enabled = true;
         }
@@ -2434,20 +2330,22 @@ namespace NUS_Downloader
                 if (Directory.GetFiles(directory, "*.nus", SearchOption.TopDirectoryOnly).Length > 0)
                 {
                     DirectoryInfo dinfo = new DirectoryInfo(directory);
-                    ToolStripMenuItem folder_item = new ToolStripMenuItem();
-                    folder_item.Text = dinfo.Name + Path.DirectorySeparatorChar;
-                    folder_item.Image = Properties.Resources.folder_table;
-
-
+                    ToolStripMenuItem folder_item = new ToolStripMenuItem()
+                    {
+                        Text = dinfo.Name + Path.DirectorySeparatorChar,
+                        Image = Properties.Resources.folder_table
+                    };
                     foreach (string nusscript in Directory.GetFiles(directory, "*.nus", SearchOption.TopDirectoryOnly))
                     {
                         FileInfo finfo = new FileInfo(nusscript);
-                        ToolStripMenuItem nus_script_item = new ToolStripMenuItem();
-                        nus_script_item.Text = finfo.Name;
-                        nus_script_item.Image = Properties.Resources.script_start;
+                        ToolStripMenuItem nus_script_item = new ToolStripMenuItem()
+                        {
+                            Text = finfo.Name,
+                            Image = Properties.Resources.script_start
+                        };
                         folder_item.DropDownItems.Add(nus_script_item);
 
-                            nus_script_item.Click += new EventHandler(nus_script_item_Click);
+                            nus_script_item.Click += new EventHandler(Nus_script_item_Click);
                         }
 
                         scriptsLocalMenuEntry.DropDownItems.Add(folder_item);
@@ -2458,16 +2356,18 @@ namespace NUS_Downloader
             foreach (string nusscript in Directory.GetFiles(Path.Combine(CURRENT_DIR, "scripts"), "*.nus", SearchOption.TopDirectoryOnly))
             {
                 FileInfo finfo = new FileInfo(nusscript);
-                ToolStripMenuItem nus_script_item = new ToolStripMenuItem();
-                nus_script_item.Text = finfo.Name;
-                nus_script_item.Image = Properties.Resources.script_start;
+                ToolStripMenuItem nus_script_item = new ToolStripMenuItem()
+                {
+                    Text = finfo.Name,
+                    Image = Properties.Resources.script_start
+                };
                 scriptsLocalMenuEntry.DropDownItems.Add(nus_script_item);
 
-                nus_script_item.Click += new EventHandler(nus_script_item_Click);
+                nus_script_item.Click += new EventHandler(Nus_script_item_Click);
             }
         }
 
-        private void aboutNUSDToolStripMenuItem_Click(object sender, EventArgs e)
+        private void AboutNUSDToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Display About Text...
             statusbox.Text = "";
@@ -2516,7 +2416,7 @@ namespace NUS_Downloader
             WriteStatus(" * Anyone who has helped beta test!");
         }
 
-        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        private void CheckBox1_CheckedChanged(object sender, EventArgs e)
         {
             SaveProxyPwdPermanentBtn.Enabled = checkBox1.Checked;
         }
@@ -2536,7 +2436,7 @@ namespace NUS_Downloader
             WriteStatus("To delete all traces of proxy settings, delete the proxy.txt file!");
         }
 
-        private void clearButton_MouseEnter(object sender, EventArgs e)
+        private void ClearButton_MouseEnter(object sender, EventArgs e)
         {
             // expand clear button
             /*button3.Left = 194;
@@ -2545,7 +2445,7 @@ namespace NUS_Downloader
             //button3.ImageAlign = ContentAlignment.MiddleLeft;
         }
 
-        private void clearButton_MouseLeave(object sender, EventArgs e)
+        private void ClearButton_MouseLeave(object sender, EventArgs e)
         {
             // shrink clear button
             /*button3.Left = 239;
@@ -2555,24 +2455,7 @@ namespace NUS_Downloader
             //button3.ImageAlign = ContentAlignment.MiddleCenter;
         }
 
-        private void saveaswadbtn_MouseEnter(object sender, EventArgs e)
-        {
-            /*saveaswadbtn.Left = 190;
-            saveaswadbtn.Size = new Size(72, 22);*/
-            saveaswadbtn.Text = "Save As";
-            /*saveaswadbtn.ImageAlign = ContentAlignment.MiddleLeft;*/
-        }
-
-        private void saveaswadbtn_MouseLeave(object sender, EventArgs e)
-        {
-            /*saveaswadbtn.Left = 230;
-            saveaswadbtn.Size = new Size(32, 22);*/
-            if (Type.GetType("Mono.Runtime") == null)
-                saveaswadbtn.Text = String.Empty;
-            //saveaswadbtn.ImageAlign = ContentAlignment.MiddleCenter;
-        }
-
-        void nus_script_item_Click(object sender, EventArgs e)
+        void Nus_script_item_Click(object sender, EventArgs e)
         {
             ToolStripMenuItem tsmi = (ToolStripMenuItem)sender;
             string folderpath = "";
@@ -2588,12 +2471,14 @@ namespace NUS_Downloader
             scripter.RunWorkerAsync(script_content);
         }
 
-        private void saveaswadbtn_Click(object sender, EventArgs e)
+        private void Saveaswadbtn_Click(object sender, EventArgs e)
         {
-            SaveFileDialog wad_saveas = new SaveFileDialog();
-            wad_saveas.Title = "Save WAD File...";
-            wad_saveas.Filter = "WAD Files|*.wad|All Files|*.*";
-            wad_saveas.AddExtension = true;
+            SaveFileDialog wad_saveas = new SaveFileDialog()
+            {
+                Title = "Save WAD File...",
+                Filter = "WAD Files|*.wad|All Files|*.*",
+                AddExtension = true
+            };
             DialogResult dres = wad_saveas.ShowDialog();
             if (dres != DialogResult.Cancel)
                 WAD_Saveas_Filename = wad_saveas.FileName;
@@ -2606,12 +2491,10 @@ namespace NUS_Downloader
             Environment.Exit(0);
         }
 
-        private void iosPatchCheckbox_CheckedChanged(object sender, EventArgs e)
+        private void IosPatchCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             if (iosPatchCheckbox.Checked == true)
             {
-                //packbox.Enabled = false;
-                packbox.Checked = true;
                 SetAllEnabled(false);
                 iosPatchGroupBox.Visible = true;
                 iosPatchGroupBox.Enabled = true;
@@ -2620,7 +2503,7 @@ namespace NUS_Downloader
             }
         }
 
-        private void iosPatchGroupBoxOKbtn_Click(object sender, EventArgs e)
+        private void IosPatchGroupBoxOKbtn_Click(object sender, EventArgs e)
         {
             SetAllEnabled(true);
             iosPatchGroupBox.Visible = false;
@@ -2792,7 +2675,7 @@ namespace NUS_Downloader
                 nusClient.ConfigureNusClient(nusWC);
                 nusClient.UseLocalFiles = localuse.Checked;
                 nusClient.ContinueWithoutTicket = true;
-                nusClient.Debug += new EventHandler<libWiiSharp.MessageEventArgs>(nusClient_Debug);
+                nusClient.Debug += new EventHandler<libWiiSharp.MessageEventArgs>(NusClient_Debug);
 
                 libWiiSharp.StoreType[] storeTypes = new libWiiSharp.StoreType[1];
                 // There's no harm in outputting everything i suppose
@@ -2801,10 +2684,7 @@ namespace NUS_Downloader
                 int title_version = int.Parse(title_info[1], System.Globalization.NumberStyles.HexNumber);
 
                 string wadName = NameFromDatabase(title_info[0]);
-                if (wadName != null)
-                    wadName = OfficialWADNaming(wadName);
-                else
-                    wadName = title_info[0] + "-NUS-v" + title_version + ".wad";
+                wadName = title_info[0] + "-NUS-v" + title_version + ".wad";
 
                 nusClient.DownloadTitle(title_info[0], title_version.ToString(), scriptdir, wadName, storeTypes);
 
@@ -2862,23 +2742,23 @@ namespace NUS_Downloader
             }            
         }
 
-        private void openNUSDDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
+        private void OpenNUSDDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Opens the directory NUSD is working in... (CURREND_DIR)
             Process.Start(CURRENT_DIR);
         }
 
-        private void mainPageToolStripMenuItem_Click(object sender, EventArgs e)
+        private void MainPageToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Process.Start("http://www.wiibrew.org/wiki/NUS_Downloader");
         }
 
-        private void databasePageToolStripMenuItem_Click(object sender, EventArgs e)
+        private void DatabasePageToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Process.Start("http://www.wiibrew.org/wiki/NUS_Downloader/database");
         }
 
-        private void extrasStrip_Opening(object sender, CancelEventArgs e)
+        private void ExtrasStrip_Opening(object sender, CancelEventArgs e)
         {
             // Show additional features based on held keys...
             #if DEBUG
@@ -2888,7 +2768,7 @@ namespace NUS_Downloader
             #endif  
         }
 
-        private void runFolderFixToolStripMenuItem_Click(object sender, EventArgs e)
+        private void RunFolderFixToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Run folderfix to make \titles\
             // Organizing folders from past NUSD releases...
@@ -2900,7 +2780,7 @@ namespace NUS_Downloader
             folder_fixer.RunWorkerAsync();
         }
 
-        private void removeNUSDFilesFoldersToolStripMenuItem_Click(object sender, EventArgs e)
+        private void RemoveNUSDFilesFoldersToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Extras thing, remove all of NUSD files...
             if (MessageBox.Show("This will delete all the files\folders you have downloaded from NUS! Are you sure you want to do this?", "Wait a second!", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != System.Windows.Forms.DialogResult.Yes)
@@ -2929,13 +2809,13 @@ namespace NUS_Downloader
                 File.Delete(Path.Combine(CURRENT_DIR, "dsikey.bin"));
         }
 
-        private void anyStrip_Closed(object sender, ToolStripDropDownClosedEventArgs e)
+        private void AnyStrip_Closed(object sender, ToolStripDropDownClosedEventArgs e)
         {
             ((ContextMenuStrip)sender).Text = "Hidden";
             //Debug.Write(((ContextMenuStrip)sender).Name);
         }
 
-        private void localTicketInventoryToolStripMenuItem_Click(object sender, EventArgs e)
+        private void LocalTicketInventoryToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Alters icons if tickets exist locally...
             WriteStatus("Adding ticket information to database entries...");
@@ -2971,7 +2851,7 @@ namespace NUS_Downloader
             WriteStatus(" - Operation completed!");
         }
 
-        private void donateToolStripMenuItem_Click(object sender, EventArgs e)
+        private void DonateToolStripMenuItem_Click(object sender, EventArgs e)
         {
             //TODO: Organize how this will work...
             Process.Start("http://wb3000.atspace.name/donations.html");
@@ -3004,46 +2884,19 @@ namespace NUS_Downloader
                 databaseButton.Text = "    [..]";
         }
 
-        private void wiiRegionCodesMenu_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        private void WiiRegionCodesMenu_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
             if (titleidbox.Text.Length == 16)
                 titleidbox.Text = titleidbox.Text.Substring(0, 14) + e.ClickedItem.Text.Substring(0, 2);
         }
 
-        private void dsiRegionCodesMenu_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        private void DsiRegionCodesMenu_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
             if (titleidbox.Text.Length == 16)
                 titleidbox.Text = titleidbox.Text.Substring(0, 14) + e.ClickedItem.Text.Substring(0, 2);
         }
 
-        private void serverLbl_MouseEnter(object sender, EventArgs e)
-        {
-            serverLbl.Font = new Font(serverLbl.Font, FontStyle.Underline);
-        }
-
-        private void serverLbl_MouseLeave(object sender, EventArgs e)
-        {
-            serverLbl.Font = new Font(serverLbl.Font, FontStyle.Regular);
-        }
-
-        private void serverLbl_TextChanged(object sender, EventArgs e)
-        {
-            if (serverLbl.Text == "Wii")
-            {
-                // Can pack WADs / Decrypt
-                packbox.Enabled = true;
-            }
-            if (serverLbl.Text == "DSi")
-            {
-                // Cannot Pack WADs
-                packbox.Checked = false;
-                packbox.Enabled = false;
-                wadnamebox.Enabled = false;
-                wadnamebox.Text = "";
-            }
-        }
-
-        private void serverLbl_Click(object sender, EventArgs e)
+        private void ServerLbl_Click(object sender, EventArgs e)
         {
             // Switch what server is displayed in the label, when clicked.
             string[] serverLblServers = new string[2] { "Wii", "DSi" };
