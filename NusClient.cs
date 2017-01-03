@@ -248,12 +248,14 @@ namespace libWiiSharp
 
             if (storeTypes.Length < 1)
             { FireDebug("  No store types were defined..."); throw new Exception("You must at least define one store type!"); }
+            
+            var titleInfo = Toolbelt.GetTitle(titleId);
 
             string titleUrl = $"{nusUrl}{titleId}/";
             string titleUrl2 = $"{nusUrl2}{titleId}/";
+            
             bool storeEncrypted = false;
             bool storeDecrypted = false;
-            bool storeWad = false;
 
             FireProgress(0);
 
@@ -269,17 +271,12 @@ namespace libWiiSharp
                         FireDebug("    [=] Storing Encrypted Content...");
                         storeEncrypted = true;
                         break;
-                    case StoreType.WAD:
-                        FireDebug("    [=] Storing WAD...");
-                        storeWad = true;
-                        break;
                     case StoreType.All:
                         FireDebug("    [=] Storing Decrypted Content...");
                         FireDebug("    [=] Storing Encrypted Content...");
                         FireDebug("    [=] Storing WAD...");
                         storeDecrypted = true;
                         storeEncrypted = true;
-                        storeWad = true;
                         break;
                     case StoreType.Empty:
                         break;
@@ -291,8 +288,8 @@ namespace libWiiSharp
             { FireDebug("   + Connection not found..."); throw new Exception("You're not connected to the internet!"); }
             
             if (!Directory.Exists(outputDir)) Directory.CreateDirectory(outputDir);
-            if (!Directory.Exists(Path.Combine(outputDir, titleId))) Directory.CreateDirectory(Path.Combine(outputDir, titleId));
-            outputDir = Path.Combine(outputDir, titleId);
+            if (!Directory.Exists(Path.Combine(outputDir, titleInfo.Name))) Directory.CreateDirectory(Path.Combine(outputDir, titleInfo.Name));
+            outputDir = Path.Combine(outputDir, titleInfo.Name);
 
             string tmdFile = "tmd" + (string.IsNullOrEmpty(titleVersion) ? string.Empty : string.Format(".{0}", titleVersion));
 
@@ -333,8 +330,11 @@ namespace libWiiSharp
             {
                 try
                 {
-                    var cetkUrl = $"{WII_NUS_URL}{titleId.ToLower()}.tik";
-                    wcNus.DownloadFile(cetkUrl, Path.Combine(outputDir, "cetk"));
+                    if (titleInfo.Ticket == "1")
+                    {
+                        var cetkUrl = $"{WII_TIK_URL}{titleId.ToLower()}.tik";
+                        wcNus.DownloadFile(cetkUrl, Path.Combine(outputDir, "cetk"));
+                    }
                 }
                 catch
                 {
@@ -348,7 +348,6 @@ namespace libWiiSharp
                     if (!(File.Exists(Path.Combine(outputDir, "cetk"))))
                     {
                         storeDecrypted = false;
-                        storeWad = false;
                     }
                 }
             }
@@ -403,48 +402,19 @@ namespace libWiiSharp
             }
 
             //Decrypt Content
-            if (storeDecrypted || storeWad)
+            if (storeDecrypted)
             {
                 FireDebug("  - Decrypting Content...");
                 Toolbelt.CDecrypt(this, outputDir);
-            }
-
-            //Pack Wad
-            if (storeWad)
-            {
-                FireDebug("  - Building Certificate Chain...");
-                CertificateChain cert = CertificateChain.FromTikTmd(Path.Combine(outputDir, "cetk"), tmdFileWithCerts);
-
-                byte[][] contents = new byte[tmd.NumOfContents][];
-
-                for (int i = 0; i < tmd.NumOfContents; i++)
-                    contents[i] = File.ReadAllBytes(Path.Combine(outputDir, (tmd.Contents[i].ContentID.ToString("x8") + ".app")));
-
-                FireDebug("  - Creating WAD...");
-                WAD wad = WAD.Create(cert, tik, tmd, contents);
-                wad.RemoveFooter();
-                wadName = wadName.Replace("[v]", "v" + this.TitleVersion.ToString()); // fix by madri2
-                if (Path.DirectorySeparatorChar.ToString() != "/" && Path.AltDirectorySeparatorChar.ToString() != "/")
-                    wadName = wadName.Replace("/", "");
-                if (wadName.Contains(Path.DirectorySeparatorChar.ToString()) || wadName.Contains(Path.AltDirectorySeparatorChar.ToString()))
-                    wad.Save(wadName);
-                else
-                    wad.Save(Path.Combine(outputDir, wadName));
             }
 
             //Delete not wanted files
             if (!storeEncrypted)
             {
                 FireDebug("  - Deleting Encrypted Contents...");
-                for (int i = 0; i < encryptedContents.Length; i++)
-                    if (File.Exists(Path.Combine(outputDir, encryptedContents[i]))) File.Delete(Path.Combine(outputDir, encryptedContents[i]));
-            }
-
-            if (storeWad && !storeDecrypted)
-            {
-                FireDebug("  - Deleting Decrypted Contents...");
-                for (int i = 0; i < encryptedContents.Length; i++)
-                    if (File.Exists(Path.Combine(outputDir, (encryptedContents[i] + ".app")))) File.Delete(Path.Combine(outputDir, (encryptedContents[i] + ".app")));
+                for (int i = 0; i < tmd.Contents.Length; i++)
+                    if (File.Exists(Path.Combine(outputDir, tmd.Contents[i].ContentID.ToString("x8"))))
+                        File.Delete(Path.Combine(outputDir, tmd.Contents[i].ContentID.ToString("x8")));
             }
 
             if (!storeDecrypted && !storeEncrypted)

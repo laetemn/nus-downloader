@@ -42,11 +42,10 @@ namespace NUS_Downloader
         private readonly string CURRENT_DIR = Directory.GetCurrentDirectory();
 
 #if DEBUG
-        private static string svnversion = "$Rev: 122 $";
-        private static string version = String.Format("SVN r{0}", ((int.Parse(svnversion.Replace("$"+"R"+"e"+"v"+": ","").Replace(" "+"$","")))+1));
+        private static string version = $"Git {Toolbelt.GetVersion()}";
 #else
         // TODO: Always remember to change version!
-        private string version = "v1.9.1";
+        private string version = $"v2.0";
 #endif
 
         // Cross-thread Windows Formsing
@@ -270,89 +269,18 @@ namespace NUS_Downloader
                 return;
             }
 
-            /* Check for DSi common key bin file...
-            if (NUSDFileExists("dsikey.bin") == true)
-            {
-                WriteStatus("DSi Common Key detected.");
-                dsidecrypt = true;
-            }*/
-            /*
-            // Check for database.xml
-            if (NUSDFileExists("database.xml") == false)
-            {
-                WriteStatus("Database.xml not found. Title database not usable!");
-                DatabaseEnabled(false);
-                updateDatabaseToolStripMenuItem.Enabled = true;
-                updateDatabaseToolStripMenuItem.Visible = true;
-                updateDatabaseToolStripMenuItem.Text = "Download Database";
-            }
-            else
+            if (NUSDFileExists("database.json") == true)
             {
                 Database db = new Database();
-                db.LoadDatabaseToStream(Path.Combine(CURRENT_DIR, "database.xml"));
-                string version = db.GetDatabaseVersion();
-                WriteStatus("Database.xml detected.");
-                WriteStatus(" - Version: " + version);
-                updateDatabaseToolStripMenuItem.Text = "Update Database";
-                //databaseButton.Enabled = false;
-                //databaseButton.Text = "DB Loading";
-                databaseButton.Text = "  [    ]";
-                databaseButton.Image = Properties.Resources.arrow_ticker;
-                // Load it up...
-                this.fds.RunWorkerAsync();
-            }
-
-            // Check for database.xml
-            if (NUSDFileExists("dsidatabase.xml") == false)
-            {
-                WriteStatus("DSiDatabase.xml not found. DSi database not usable!");
-                DatabaseEnabled(false);
-                updateDatabaseToolStripMenuItem.Enabled = true;
-                updateDatabaseToolStripMenuItem.Visible = true;
-                updateDatabaseToolStripMenuItem.Text = "Download Database";
-            }
-            else
-            {
-                Database db = new Database();
-                db.LoadDatabaseToStream(Path.Combine(CURRENT_DIR, "database.xml"));
-                string version = db.GetDatabaseVersion();
-                WriteStatus("Database.xml detected.");
-                WriteStatus(" - Version: " + version);
-                updateDatabaseToolStripMenuItem.Text = "Update Database";
-                //databaseButton.Enabled = false;
-                //databaseButton.Text = "DB Loading";
-                databaseButton.Text = "  [    ]";
-                databaseButton.Image = Properties.Resources.arrow_ticker;
-                // Load it up...
-                this.fds.RunWorkerAsync();
-            }*/
-
-            if (NUSDFileExists("database.xml") == true)
-            {
-                Database db = new Database();
-                db.LoadDatabaseToStream(Path.Combine(CURRENT_DIR, "database.xml"));
-                string version = db.GetDatabaseVersion();
-                WriteStatus("Database.xml detected.");
+                db.LoadDatabaseToStream();
+                string version = Database.GetDatabaseVersion();
+                WriteStatus("Database.json detected.");
                 WriteStatus(" - Version: " + version);
                 updateDatabaseToolStripMenuItem.Text = "Update Database";
                 databaseButton.Text = "  [    ]";
                 databaseButton.Image = Properties.Resources.arrow_ticker;
                 // Load it up...
                 this.databaseWorker.RunWorkerAsync();
-            }
-
-            if (NUSDFileExists("dsidatabase.xml") == true)
-            {
-                Database db = new Database();
-                db.LoadDatabaseToStream(Path.Combine(CURRENT_DIR, "dsidatabase.xml"));
-                string version = db.GetDatabaseVersion();
-                WriteStatus("DSiDatabase.xml detected.");
-                WriteStatus(" - Version: " + version);
-                updateDatabaseToolStripMenuItem.Text = "Update Database";
-                databaseButton.Text = "    [  ]";
-                databaseButton.Image = Properties.Resources.arrow_ticker;
-                // Load it up...
-                this.dsiDatabaseWorker.RunWorkerAsync();
             }
 
             // Load scripts (local)
@@ -698,7 +626,8 @@ namespace NUS_Downloader
             nusClient.Debug += new EventHandler<libWiiSharp.MessageEventArgs>(NusClient_Debug);
             nusClient.Progress += new EventHandler<ProgressChangedEventArgs>(NusClient_Progress);
 
-            libWiiSharp.StoreType[] storeTypes = new libWiiSharp.StoreType[3];
+            var empty = libWiiSharp.StoreType.Empty;
+            libWiiSharp.StoreType[] storeTypes = new libWiiSharp.StoreType[3] { empty, empty, empty };
             if (decryptbox.Checked) storeTypes[1] = libWiiSharp.StoreType.DecryptedContent; else storeTypes[1] = libWiiSharp.StoreType.Empty;
             if (keepenccontents.Checked) storeTypes[2] = libWiiSharp.StoreType.EncryptedContent; else storeTypes[2] = libWiiSharp.StoreType.Empty;
 
@@ -991,7 +920,7 @@ namespace NUS_Downloader
             SetPropertyThreadSafe(wwFakeMenuItem, true, "Visible");
 
             Database databaseObj = new Database();
-            databaseObj.LoadDatabaseToStream(Path.Combine(CURRENT_DIR, "database.xml"));
+            databaseObj.LoadDatabaseToStream();
 
             ToolStripMenuItem[] systemItems = databaseObj.LoadSystemTitles();
             for (int a = 0; a < systemItems.Length; a++)
@@ -1102,7 +1031,7 @@ namespace NUS_Downloader
             SetPropertyThreadSafe(dSiWareFakeToolStripMenu, true, "Visible");
 
             Database databaseObj = new Database();
-            databaseObj.LoadDatabaseToStream(Path.Combine(CURRENT_DIR, "dsidatabase.xml"));
+            databaseObj.LoadDatabaseToStream();
 
             ToolStripMenuItem[] systemItems = databaseObj.LoadDSiSystemTitles();
             for (int a = 0; a < systemItems.Length; a++)
@@ -1461,7 +1390,7 @@ namespace NUS_Downloader
             dsiRegionCodesMenu.DropDownItems.Clear();
 
             Database databaseObj = new Database();
-            databaseObj.LoadDatabaseToStream(Path.Combine(CURRENT_DIR, "database.xml"));
+            databaseObj.LoadDatabaseToStream();
 
             ToolStripMenuItem[] regionItems = databaseObj.LoadRegionCodes();
 
@@ -1469,17 +1398,6 @@ namespace NUS_Downloader
             for (int z = 0; z < regionItems.Length; z++)
             {
                 wiiRegionCodesMenu.DropDownItems.Add(regionItems[z].Text);
-            }
-
-            Database dsiDatabaseObj = new Database();
-            dsiDatabaseObj.LoadDatabaseToStream(Path.Combine(CURRENT_DIR, "dsidatabase.xml"));
-
-            ToolStripMenuItem[] dsiRegionItems = dsiDatabaseObj.LoadRegionCodes();
-
-            // For each child node (region node)
-            for (int z = 0; z < dsiRegionItems.Length; z++)
-            {
-                dsiRegionCodesMenu.DropDownItems.Add(dsiRegionItems[z].Text);
             }
         } 
 
@@ -1673,55 +1591,29 @@ namespace NUS_Downloader
         private void RetrieveNewDatabase(object sender, DoWorkEventArgs e)
         {
             // Retrieve Wiibrew/DSiBrew database page source code
-            WebClient databasedl = new WebClient();
+            using (WebClient wc = new WebClient())
+            {
+                // Proxy
+                //databasedl = ConfigureWithProxy(databasedl);
 
-            // Proxy
-            //databasedl = ConfigureWithProxy(databasedl);
- 
-            string databaseSource =
-                databasedl.DownloadString(e.Argument.ToString() + "?cachesmash=" +
-                                          System.DateTime.Now.ToString());
+                string databaseSource = wc.DownloadString(e.Argument.ToString());
 
-            // Strip out HTML
-            databaseSource = Regex.Replace(databaseSource, @"<(.|\n)*?>", "");
-
-            // Shrink to fix only the database
-            string startofdatabase = "&lt;database v";
-            string endofdatabase = "&lt;/database&gt;";
-            databaseSource = databaseSource.Substring(databaseSource.IndexOf(startofdatabase),
-                                                    databaseSource.Length - databaseSource.IndexOf(startofdatabase));
-            databaseSource = databaseSource.Substring(0, databaseSource.IndexOf(endofdatabase) + endofdatabase.Length);
-
-            // Fix ", <, >, and spaces
-            databaseSource = databaseSource.Replace("&lt;", "<");
-            databaseSource = databaseSource.Replace("&gt;", ">");
-            databaseSource = databaseSource.Replace("&quot;", '"'.ToString());
-            databaseSource = databaseSource.Replace("&nbsp;", " "); // Shouldn't occur, but they happen...
-
-            // Return parsed xml database...
-            e.Result = databaseSource;
+                // Return parsed xml database...
+                e.Result = databaseSource;
+            }
         }
 
         private void RetrieveNewDatabase_Completed(object sender, RunWorkerCompletedEventArgs e)
         {
             string database = e.Result.ToString();
-
-            string databaseFilename = "";
-            if (database.Contains("DSISYSTEM"))
-            {
-                databaseFilename = "dsidatabase.xml";
-            }
-            else if (database.Contains("0000000100000002"))
-            {
-                databaseFilename = "database.xml";
-            }
+            string databaseFilename = "database.json";
 
             try
             {
                 Database db = new Database();
-                db.LoadDatabaseToStream(Path.Combine(CURRENT_DIR, databaseFilename));
-                string currentversion = db.GetDatabaseVersion();
-                string onlineversion = Database.GetDatabaseVersion(database);
+                db.LoadDatabaseToStream();
+                string currentversion = Database.GetDatabaseVersion();
+                string onlineversion = Database.GetDatabaseVersion();
                 WriteStatus(String.Format(" - Database successfully parsed! ({0})", databaseFilename));
                 WriteStatus("   - Current Database Version: " + currentversion);
                 WriteStatus("   - Online Database Version: " + onlineversion);
@@ -1735,7 +1627,7 @@ namespace NUS_Downloader
             catch (FileNotFoundException)
             {
                 WriteStatus(" - Database does not yet exist.");
-                WriteStatus("   - Online Database Version: " + Database.GetDatabaseVersion(database));
+                WriteStatus("   - Online Database Version: " + Database.GetDatabaseVersion());
             }
 
             bool isCreation = false;
@@ -1777,17 +1669,15 @@ namespace NUS_Downloader
             statusbox.Text = "";
             WriteStatus("Updating your databases from Wiibrew/DSibrew");
 
-            string[] wiibrewValues = new string[] { "http://www.wiibrew.org/wiki/NUS_Downloader/database", "http://www.dsibrew.org/wiki/NUS_Downloader/database" };
+            string[] wiibrewValues = new string[] { "https://wiiu.titlekeys.com/json" };
 
-            BackgroundWorker dbFetcher = new BackgroundWorker();
-            dbFetcher.DoWork += new DoWorkEventHandler(RetrieveNewDatabase);
-            dbFetcher.RunWorkerCompleted += new RunWorkerCompletedEventHandler(RetrieveNewDatabase_Completed);
-            dbFetcher.RunWorkerAsync(wiibrewValues[0]);
-
-            BackgroundWorker dbDsiFetcher = new BackgroundWorker();
-            dbDsiFetcher.DoWork += new DoWorkEventHandler(RetrieveNewDatabase);
-            dbDsiFetcher.RunWorkerCompleted += new RunWorkerCompletedEventHandler(RetrieveNewDatabase_Completed);
-            dbDsiFetcher.RunWorkerAsync(wiibrewValues[1]);
+            foreach(var brew in wiibrewValues)
+            {
+                BackgroundWorker dbFetcher = new BackgroundWorker();
+                dbFetcher.DoWork += new DoWorkEventHandler(RetrieveNewDatabase);
+                dbFetcher.RunWorkerCompleted += new RunWorkerCompletedEventHandler(RetrieveNewDatabase_Completed);
+                dbFetcher.RunWorkerAsync(brew);
+            }
         }
 
         private void LoadInfoFromTMDToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2516,7 +2406,7 @@ namespace NUS_Downloader
         {
             SetPropertyThreadSafe(scriptsDatabaseToolStripMenuItem, false, "Visible");
             Database databaseObj = new Database();
-            databaseObj.LoadDatabaseToStream(Path.Combine(CURRENT_DIR, "database.xml"));
+            databaseObj.LoadDatabaseToStream();
 
             ToolStripMenuItem[] scriptItems = databaseObj.LoadScripts();
             for (int a = 0; a < scriptItems.Length; a++)

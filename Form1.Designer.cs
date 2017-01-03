@@ -141,6 +141,7 @@ namespace NUS_Downloader
             // Extrasbtn
             // 
             this.Extrasbtn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.Extrasbtn.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Extrasbtn.Location = new System.Drawing.Point(194, 5);
             this.Extrasbtn.Name = "Extrasbtn";
             this.Extrasbtn.Size = new System.Drawing.Size(68, 27);
@@ -152,6 +153,7 @@ namespace NUS_Downloader
             // downloadstartbtn
             // 
             this.downloadstartbtn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.downloadstartbtn.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.downloadstartbtn.Location = new System.Drawing.Point(12, 64);
             this.downloadstartbtn.Name = "downloadstartbtn";
             this.downloadstartbtn.Size = new System.Drawing.Size(250, 25);
@@ -164,6 +166,7 @@ namespace NUS_Downloader
             // 
             this.statusbox.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.statusbox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.statusbox.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.statusbox.Location = new System.Drawing.Point(-2, -2);
             this.statusbox.Name = "statusbox";
             this.statusbox.ReadOnly = true;
@@ -183,7 +186,7 @@ namespace NUS_Downloader
             this.label1.BackColor = System.Drawing.Color.Transparent;
             this.label1.Location = new System.Drawing.Point(159, 45);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(13, 13);
+            this.label1.Size = new System.Drawing.Size(12, 13);
             this.label1.TabIndex = 0;
             this.label1.Text = "v";
             // 
@@ -592,7 +595,7 @@ namespace NUS_Downloader
             this.label13.AutoSize = true;
             this.label13.Location = new System.Drawing.Point(6, 55);
             this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(32, 13);
+            this.label13.Size = new System.Drawing.Size(33, 13);
             this.label13.TabIndex = 32;
             this.label13.Text = "User:";
             // 
@@ -601,7 +604,7 @@ namespace NUS_Downloader
             this.label12.AutoSize = true;
             this.label12.Location = new System.Drawing.Point(6, 29);
             this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(36, 13);
+            this.label12.Size = new System.Drawing.Size(37, 13);
             this.label12.TabIndex = 31;
             this.label12.Text = "Proxy:";
             // 
@@ -610,7 +613,7 @@ namespace NUS_Downloader
             this.ProxyUser.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.ProxyUser.Location = new System.Drawing.Point(55, 53);
             this.ProxyUser.Name = "ProxyUser";
-            this.ProxyUser.Size = new System.Drawing.Size(151, 20);
+            this.ProxyUser.Size = new System.Drawing.Size(151, 22);
             this.ProxyUser.TabIndex = 30;
             // 
             // SaveProxyBtn
@@ -640,7 +643,7 @@ namespace NUS_Downloader
             this.ProxyURL.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.ProxyURL.Location = new System.Drawing.Point(55, 27);
             this.ProxyURL.Name = "ProxyURL";
-            this.ProxyURL.Size = new System.Drawing.Size(151, 20);
+            this.ProxyURL.Size = new System.Drawing.Size(151, 22);
             this.ProxyURL.TabIndex = 0;
             // 
             // ProxyVerifyBox
@@ -676,7 +679,7 @@ namespace NUS_Downloader
             this.checkBox1.AutoSize = true;
             this.checkBox1.Location = new System.Drawing.Point(9, 72);
             this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(199, 30);
+            this.checkBox1.Size = new System.Drawing.Size(214, 30);
             this.checkBox1.TabIndex = 35;
             this.checkBox1.Text = "I understand that NUSD stores proxy\r\npasswords in plain text.";
             this.checkBox1.UseVisualStyleBackColor = true;
@@ -707,7 +710,7 @@ namespace NUS_Downloader
             this.ProxyPwdBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.ProxyPwdBox.Location = new System.Drawing.Point(71, 19);
             this.ProxyPwdBox.Name = "ProxyPwdBox";
-            this.ProxyPwdBox.Size = new System.Drawing.Size(135, 20);
+            this.ProxyPwdBox.Size = new System.Drawing.Size(135, 22);
             this.ProxyPwdBox.TabIndex = 32;
             this.ProxyPwdBox.UseSystemPasswordChar = true;
             this.ProxyPwdBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ProxyPwdBox_KeyPress);
@@ -715,6 +718,7 @@ namespace NUS_Downloader
             // scriptsbutton
             // 
             this.scriptsbutton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.scriptsbutton.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.scriptsbutton.Location = new System.Drawing.Point(103, 5);
             this.scriptsbutton.Name = "scriptsbutton";
             this.scriptsbutton.Size = new System.Drawing.Size(85, 27);
@@ -823,7 +827,7 @@ namespace NUS_Downloader
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(9, 16);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(184, 26);
+            this.label2.Size = new System.Drawing.Size(203, 26);
             this.label2.TabIndex = 2;
             this.label2.Text = "Patch the following bugs into any IOS\r\nI download:";
             // 
@@ -839,7 +843,7 @@ namespace NUS_Downloader
             "NAND permissions"});
             this.iosPatchesListBox.Location = new System.Drawing.Point(6, 62);
             this.iosPatchesListBox.Name = "iosPatchesListBox";
-            this.iosPatchesListBox.Size = new System.Drawing.Size(115, 45);
+            this.iosPatchesListBox.Size = new System.Drawing.Size(115, 34);
             this.iosPatchesListBox.TabIndex = 1;
             // 
             // iosPatchGroupBoxOKbtn
@@ -865,6 +869,7 @@ namespace NUS_Downloader
             // databaseButton
             // 
             this.databaseButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.databaseButton.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.databaseButton.Location = new System.Drawing.Point(12, 5);
             this.databaseButton.Name = "databaseButton";
             this.databaseButton.Size = new System.Drawing.Size(85, 27);
@@ -877,6 +882,7 @@ namespace NUS_Downloader
             // iosPatchCheckbox
             // 
             this.iosPatchCheckbox.Enabled = false;
+            this.iosPatchCheckbox.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.iosPatchCheckbox.Image = global::NUS_Downloader.Properties.Resources.bug_add;
             this.iosPatchCheckbox.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.iosPatchCheckbox.Location = new System.Drawing.Point(11, 487);
@@ -890,8 +896,7 @@ namespace NUS_Downloader
             // 
             // keepenccontents
             // 
-            this.keepenccontents.Checked = true;
-            this.keepenccontents.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.keepenccontents.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.keepenccontents.Image = global::NUS_Downloader.Properties.Resources.package;
             this.keepenccontents.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.keepenccontents.Location = new System.Drawing.Point(11, 434);
@@ -926,13 +931,16 @@ namespace NUS_Downloader
             // 
             // decryptbox
             // 
+            this.decryptbox.Checked = true;
+            this.decryptbox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.decryptbox.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.decryptbox.Image = global::NUS_Downloader.Properties.Resources.package_green;
             this.decryptbox.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.decryptbox.Location = new System.Drawing.Point(11, 410);
+            this.decryptbox.Location = new System.Drawing.Point(11, 408);
             this.decryptbox.Name = "decryptbox";
-            this.decryptbox.Size = new System.Drawing.Size(161, 26);
+            this.decryptbox.Size = new System.Drawing.Size(142, 26);
             this.decryptbox.TabIndex = 9;
-            this.decryptbox.Text = "Decrypt Contents";
+            this.decryptbox.Text = "Decrypt and Extract";
             this.decryptbox.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.decryptbox.UseVisualStyleBackColor = true;
             // 
@@ -941,12 +949,13 @@ namespace NUS_Downloader
             this.localuse.AutoSize = true;
             this.localuse.Checked = true;
             this.localuse.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.localuse.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.localuse.Image = global::NUS_Downloader.Properties.Resources.drive_disk;
             this.localuse.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.localuse.Location = new System.Drawing.Point(11, 463);
             this.localuse.MinimumSize = new System.Drawing.Size(0, 22);
             this.localuse.Name = "localuse";
-            this.localuse.Size = new System.Drawing.Size(162, 22);
+            this.localuse.Size = new System.Drawing.Size(167, 22);
             this.localuse.TabIndex = 12;
             this.localuse.Text = "Use Local Files If Present";
             this.localuse.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
@@ -955,6 +964,7 @@ namespace NUS_Downloader
             // serverLbl
             // 
             this.serverLbl.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.serverLbl.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.serverLbl.Location = new System.Drawing.Point(233, 38);
             this.serverLbl.Name = "serverLbl";
             this.serverLbl.Size = new System.Drawing.Size(29, 20);
@@ -965,11 +975,11 @@ namespace NUS_Downloader
             // 
             // titleidbox
             // 
-            this.titleidbox.Font = new System.Drawing.Font("Tahoma", 8.25F);
+            this.titleidbox.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.titleidbox.Location = new System.Drawing.Point(12, 38);
             this.titleidbox.MaxLength = 16;
             this.titleidbox.Name = "titleidbox";
-            this.titleidbox.Size = new System.Drawing.Size(141, 21);
+            this.titleidbox.Size = new System.Drawing.Size(141, 22);
             this.titleidbox.TabIndex = 3;
             this.titleidbox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.titleidbox.WaterMarkColor = System.Drawing.Color.Silver;
@@ -985,11 +995,11 @@ namespace NUS_Downloader
             // 
             // titleversion
             // 
-            this.titleversion.Font = new System.Drawing.Font("Tahoma", 8.25F);
+            this.titleversion.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.titleversion.Location = new System.Drawing.Point(169, 38);
             this.titleversion.MaxLength = 8;
             this.titleversion.Name = "titleversion";
-            this.titleversion.Size = new System.Drawing.Size(58, 21);
+            this.titleversion.Size = new System.Drawing.Size(58, 22);
             this.titleversion.TabIndex = 4;
             this.titleversion.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.titleversion.WaterMarkColor = System.Drawing.Color.Silver;
@@ -1018,10 +1028,12 @@ namespace NUS_Downloader
             this.Controls.Add(this.richPanel);
             this.Controls.Add(this.decryptbox);
             this.Controls.Add(this.localuse);
+            this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "Form1";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = " ";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);

@@ -15,6 +15,8 @@ namespace NUS_Downloader
 {
     class Database
     {
+        public static string DatabaseFile => Directory.GetCurrentDirectory() + "/database.json";
+
         private string SystemTag = "SYS";
         private string IosTag = "IOS";
         private string VcTag = "VC";
@@ -33,45 +35,27 @@ namespace NUS_Downloader
         public static Image orange = Properties.Resources.bullet_orange;
         public static Image redgreen = Properties.Resources.bullet_redgreen;
         public static Image redorange = Properties.Resources.bullet_redorange;
-
-        //public static Image green_blue = Properties.Resources.bullet_green_blue;
-        //public static Image orange_blue = Properties.Resources.bullet_orange_blue;
         public static Image redgreen_blue = Properties.Resources.bullet_redgreen_blue;
-        //public static Image redorange_blue = Properties.Resources.bullet_redorange_blue;
 
-        public void LoadDatabaseToStream(string databaseFile)
+        public void LoadDatabaseToStream()
         {
             // Does it exist?
-            if (!File.Exists(databaseFile))
-                throw new FileNotFoundException("I couldn't find the database file!", "database.xml");
+            if (!File.Exists(DatabaseFile))
+                throw new FileNotFoundException("I couldn't find the database file!", "database.json");
             
-            databaseString = File.ReadAllText(databaseFile);
-            
+            databaseString = File.ReadAllText(DatabaseFile);
         }
 
-        public string GetDatabaseVersion()
+        public static string GetDatabaseVersion()
         {
-            if (databaseString.Length < 1)
+            if (!File.Exists(DatabaseFile))
             {
-                throw new Exception("Load the database into a memory stream first!");
+                throw new Exception("Can't find database file! Does it exist?");
             }
 
-            XmlDocument xDoc = new XmlDocument();
-            xDoc.LoadXml(databaseString);
-            XmlNodeList DatabaseList = xDoc.GetElementsByTagName("database");
-            XmlAttributeCollection Attributes = DatabaseList[0].Attributes;
-            return Attributes[0].Value;
+            return new FileInfo(DatabaseFile).CreationTime.ToShortDateString();
         }
-
-        public static string GetDatabaseVersion(string databaseString)
-        {
-            XmlDocument xDoc = new XmlDocument();
-            xDoc.LoadXml(databaseString);
-            XmlNodeList DatabaseList = xDoc.GetElementsByTagName("database");
-            XmlAttributeCollection Attributes = DatabaseList[0].Attributes;
-            return Attributes[0].Value;
-        }
-                        
+        
         public ToolStripMenuItem[] LoadSystemTitles()
         {
             if (databaseString.Length < 1)
@@ -830,5 +814,6 @@ namespace NUS_Downloader
 
             return DSiWareTitleCollection;
         }
+        
     }
 }
