@@ -1,13 +1,8 @@
 ﻿using libWiiSharp;
-using Newtonsoft.Json;
 using NUS_Downloader.Properties;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
-using System.Net;
-using System.Text;
 using System.Windows.Forms;
 
 namespace NUS_Downloader
@@ -89,36 +84,6 @@ namespace NUS_Downloader
                 nus.FireDebug("Error decrypting contents!\r\n" + ex.Message);
             }
         }
-        
-        public class WiiUTitle
-        {
-            public string TitleID { get; set; }
-            public string TitleKey { get; set; }
-            public string Name { get; set; }
-            public string Region { get; set; }
-            public string Ticket { get; set; }
-        }
 
-        private static string databaseFile => "database.json";
-
-        public static WiiUTitle GetTitle(string tid)
-        {
-            using (var wc = new WebClient())
-            {
-                if (!File.Exists(databaseFile) || DateTime.Now > new FileInfo(databaseFile).LastWriteTime.AddDays(1))
-                    wc.DownloadFile("https://wiiu.titlekeys.com/json", databaseFile);
-
-                var json = File.ReadAllText(databaseFile, Encoding.UTF8);
-
-                var database = JsonConvert.DeserializeObject<List<WiiUTitle>>(json);
-                var titleInfo = database.Find(t => t.TitleID.ToLower() == tid.ToLower());
-
-                TextInfo textInfo = new CultureInfo("en-US", true).TextInfo;
-                titleInfo.Name = textInfo.ToTitleCase(titleInfo.Name.ToLower().Replace('\n', ' '));
-                titleInfo.Name += $" ({titleInfo.Region})";
-
-                return titleInfo;
-            }
-        }
     }
 }

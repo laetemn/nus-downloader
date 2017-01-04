@@ -242,14 +242,14 @@ namespace libWiiSharp
         /// <param name="titleVersion"></param>
         /// <param name="outputDir"></param>
         /// <param name="storeTypes"></param>
-        public void DownloadTitle(string titleId, string titleVersion, string outputDir, string wadName, StoreType[] storeTypes)
+        public void DownloadTitle(string titleId, string titleVersion, string outputDir, StoreType[] storeTypes)
         {
             FireDebug("Downloading Title {0} v{1}...", titleId, (string.IsNullOrEmpty(titleVersion)) ? "[Latest]" : titleVersion);
 
             if (storeTypes.Length < 1)
             { FireDebug("  No store types were defined..."); throw new Exception("You must at least define one store type!"); }
             
-            var titleInfo = Toolbelt.GetTitle(titleId);
+            var titleInfo = Database.GetTitle(titleId);
 
             string titleUrl = $"{nusUrl}{titleId}/";
             string titleUrl2 = $"{nusUrl2}{titleId}/";
@@ -285,7 +285,10 @@ namespace libWiiSharp
 
             FireDebug("  - Checking for Internet connection...");
             if (!CheckInet())
-            { FireDebug("   + Connection not found..."); throw new Exception("You're not connected to the internet!"); }
+            {
+                FireDebug("   + Connection not found...");
+                throw new Exception("You're not connected to the internet!");
+            }
             
             if (!Directory.Exists(outputDir)) Directory.CreateDirectory(outputDir);
             if (!Directory.Exists(Path.Combine(outputDir, titleInfo.Name))) Directory.CreateDirectory(Path.Combine(outputDir, titleInfo.Name));
@@ -376,6 +379,8 @@ namespace libWiiSharp
             //Download Content
             for (int i = 0; i < tmd.NumOfContents; i++)
             {
+                Form1.token.ThrowIfCancellationRequested();
+
                 var size = Toolbelt.SizeSuffix(tmd.Contents[i].Size);
                 FireDebug("  - Downloading Content #{0} of {1}... ({2} bytes)", i + 1, tmd.NumOfContents, size);
                 FireProgress(((i + 1) * 60 / tmd.NumOfContents) + 10);
@@ -489,6 +494,7 @@ namespace libWiiSharp
 
         private void FireProgress(int progressPercentage)
         {
+            Form1.token.ThrowIfCancellationRequested();
             Progress?.Invoke(new object(), new ProgressChangedEventArgs(progressPercentage, string.Empty));
         }
         #endregion

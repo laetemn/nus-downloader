@@ -3,3 +3,4 @@ bin/
 .vs/
 NUS Downloader.csproj.user
 NUS Downloader.sln
+version.txt

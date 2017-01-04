@@ -337,6 +337,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="Shared.cs" />
+    <Compile Include="Structs\WiiUTitle.cs" />
     <Compile Include="Ticket.cs" />
     <Compile Include="TMD.cs" />
     <Compile Include="Toolbelt.cs" />
