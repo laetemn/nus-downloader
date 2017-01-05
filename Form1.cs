@@ -43,7 +43,7 @@ namespace NUS_Downloader
         private static string version = $"Git {Toolbelt.GetVersion()}";
 #else
         // TODO: Always remember to change version!
-        private string version = $"v2.0";
+        private string version = $"v2.0.0-ahlpa";
 #endif
 
         // Cross-thread Windows Formsing
@@ -212,7 +212,7 @@ namespace NUS_Downloader
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            this.Text = String.Format("NUSD - {0}", version); ;
+            this.Text = String.Format("GrapeVine - {0}", version); ;
             this.Size = this.MinimumSize;
             serverLbl.Text = "Wii";
         }

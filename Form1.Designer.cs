@@ -52,6 +52,7 @@ namespace NUS_Downloader
             this.donateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutNUSDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.richPanel = new System.Windows.Forms.Panel();
+            this.clearButton = new System.Windows.Forms.Button();
             this.ProxyVerifyBox = new System.Windows.Forms.GroupBox();
             this.SaveProxyPwdPermanentBtn = new System.Windows.Forms.Button();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
@@ -67,7 +68,6 @@ namespace NUS_Downloader
             this.ProxyURL = new System.Windows.Forms.TextBox();
             this.databaseButton = new System.Windows.Forms.Button();
             this.keepenccontents = new System.Windows.Forms.CheckBox();
-            this.clearButton = new System.Windows.Forms.Button();
             this.decryptbox = new System.Windows.Forms.CheckBox();
             this.localuse = new System.Windows.Forms.CheckBox();
             this.serverLbl = new System.Windows.Forms.Label();
@@ -88,7 +88,7 @@ namespace NUS_Downloader
             // 
             this.Extrasbtn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.Extrasbtn.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Extrasbtn.Location = new System.Drawing.Point(194, 5);
+            this.Extrasbtn.Location = new System.Drawing.Point(243, 5);
             this.Extrasbtn.Name = "Extrasbtn";
             this.Extrasbtn.Size = new System.Drawing.Size(68, 27);
             this.Extrasbtn.TabIndex = 2;
@@ -102,7 +102,7 @@ namespace NUS_Downloader
             this.downloadstartbtn.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.downloadstartbtn.Location = new System.Drawing.Point(12, 89);
             this.downloadstartbtn.Name = "downloadstartbtn";
-            this.downloadstartbtn.Size = new System.Drawing.Size(250, 25);
+            this.downloadstartbtn.Size = new System.Drawing.Size(299, 25);
             this.downloadstartbtn.TabIndex = 5;
             this.downloadstartbtn.Text = "Start NUS Download!";
             this.downloadstartbtn.UseVisualStyleBackColor = true;
@@ -117,7 +117,7 @@ namespace NUS_Downloader
             this.statusbox.Name = "statusbox";
             this.statusbox.ReadOnly = true;
             this.statusbox.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.None;
-            this.statusbox.Size = new System.Drawing.Size(252, 269);
+            this.statusbox.Size = new System.Drawing.Size(300, 269);
             this.statusbox.TabIndex = 0;
             this.statusbox.Text = "";
             // 
@@ -125,7 +125,7 @@ namespace NUS_Downloader
             // 
             this.label1.AutoSize = true;
             this.label1.BackColor = System.Drawing.Color.Transparent;
-            this.label1.Location = new System.Drawing.Point(158, 68);
+            this.label1.Location = new System.Drawing.Point(207, 69);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(12, 13);
             this.label1.TabIndex = 0;
@@ -214,8 +214,30 @@ namespace NUS_Downloader
             this.richPanel.Controls.Add(this.statusbox);
             this.richPanel.Location = new System.Drawing.Point(12, 141);
             this.richPanel.Name = "richPanel";
-            this.richPanel.Size = new System.Drawing.Size(250, 268);
+            this.richPanel.Size = new System.Drawing.Size(299, 268);
             this.richPanel.TabIndex = 56;
+            // 
+            // clearButton
+            // 
+            this.clearButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.clearButton.AutoSize = true;
+            this.clearButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.clearButton.BackColor = System.Drawing.Color.Transparent;
+            this.clearButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.clearButton.Image = global::NUS_Downloader.Properties.Resources.bin_closed;
+            this.clearButton.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.clearButton.Location = new System.Drawing.Point(274, 243);
+            this.clearButton.MaximumSize = new System.Drawing.Size(0, 24);
+            this.clearButton.MinimumSize = new System.Drawing.Size(0, 24);
+            this.clearButton.Name = "clearButton";
+            this.clearButton.Size = new System.Drawing.Size(24, 24);
+            this.clearButton.TabIndex = 12;
+            this.clearButton.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.clearButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.clearButton.UseVisualStyleBackColor = false;
+            this.clearButton.Click += new System.EventHandler(this.ClearStatusbox);
+            this.clearButton.MouseEnter += new System.EventHandler(this.ClearButton_MouseEnter);
+            this.clearButton.MouseLeave += new System.EventHandler(this.ClearButton_MouseLeave);
             // 
             // ProxyVerifyBox
             // 
@@ -385,28 +407,6 @@ namespace NUS_Downloader
             this.keepenccontents.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.keepenccontents.UseVisualStyleBackColor = true;
             // 
-            // clearButton
-            // 
-            this.clearButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.clearButton.AutoSize = true;
-            this.clearButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.clearButton.BackColor = System.Drawing.Color.Transparent;
-            this.clearButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.clearButton.Image = global::NUS_Downloader.Properties.Resources.bin_closed;
-            this.clearButton.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.clearButton.Location = new System.Drawing.Point(225, 243);
-            this.clearButton.MaximumSize = new System.Drawing.Size(0, 24);
-            this.clearButton.MinimumSize = new System.Drawing.Size(0, 24);
-            this.clearButton.Name = "clearButton";
-            this.clearButton.Size = new System.Drawing.Size(24, 24);
-            this.clearButton.TabIndex = 12;
-            this.clearButton.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.clearButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.clearButton.UseVisualStyleBackColor = false;
-            this.clearButton.Click += new System.EventHandler(this.ClearStatusbox);
-            this.clearButton.MouseEnter += new System.EventHandler(this.ClearButton_MouseEnter);
-            this.clearButton.MouseLeave += new System.EventHandler(this.ClearButton_MouseLeave);
-            // 
             // decryptbox
             // 
             this.decryptbox.Checked = true;
@@ -443,9 +443,9 @@ namespace NUS_Downloader
             // 
             this.serverLbl.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.serverLbl.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.serverLbl.Location = new System.Drawing.Point(233, 61);
+            this.serverLbl.Location = new System.Drawing.Point(282, 59);
             this.serverLbl.Name = "serverLbl";
-            this.serverLbl.Size = new System.Drawing.Size(29, 20);
+            this.serverLbl.Size = new System.Drawing.Size(29, 22);
             this.serverLbl.TabIndex = 57;
             this.serverLbl.Text = "Wii";
             this.serverLbl.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -457,7 +457,7 @@ namespace NUS_Downloader
             this.titleidbox.Location = new System.Drawing.Point(11, 60);
             this.titleidbox.MaxLength = 16;
             this.titleidbox.Name = "titleidbox";
-            this.titleidbox.Size = new System.Drawing.Size(141, 22);
+            this.titleidbox.Size = new System.Drawing.Size(190, 22);
             this.titleidbox.TabIndex = 3;
             this.titleidbox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.titleidbox.WaterMarkColor = System.Drawing.Color.Silver;
@@ -469,13 +469,13 @@ namespace NUS_Downloader
             this.dlprogress.ContainerControl = this;
             this.dlprogress.Location = new System.Drawing.Point(12, 120);
             this.dlprogress.Name = "dlprogress";
-            this.dlprogress.Size = new System.Drawing.Size(250, 15);
+            this.dlprogress.Size = new System.Drawing.Size(299, 15);
             this.dlprogress.TabIndex = 47;
             // 
             // titleversion
             // 
             this.titleversion.Font = new System.Drawing.Font("Segoe UI", 8.25F);
-            this.titleversion.Location = new System.Drawing.Point(169, 60);
+            this.titleversion.Location = new System.Drawing.Point(218, 59);
             this.titleversion.MaxLength = 8;
             this.titleversion.Name = "titleversion";
             this.titleversion.Size = new System.Drawing.Size(58, 22);
@@ -513,7 +513,7 @@ namespace NUS_Downloader
             this.titleName.Location = new System.Drawing.Point(12, 39);
             this.titleName.Name = "titleName";
             this.titleName.ReadOnly = true;
-            this.titleName.Size = new System.Drawing.Size(251, 14);
+            this.titleName.Size = new System.Drawing.Size(309, 14);
             this.titleName.TabIndex = 58;
             this.titleName.Text = "null title";
             this.titleName.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
@@ -521,7 +521,7 @@ namespace NUS_Downloader
             // Form1
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-            this.ClientSize = new System.Drawing.Size(274, 500);
+            this.ClientSize = new System.Drawing.Size(323, 500);
             this.Controls.Add(this.titleName);
             this.Controls.Add(this.serverLbl);
             this.Controls.Add(this.titleidbox);
