@@ -209,30 +209,6 @@ namespace libWiiSharp
             FireDebug("Downloading Content (Content ID: {0}) of Title {1} v{2} Finished...", contentId, titleId, (string.IsNullOrEmpty(titleVersion)) ? "[Latest]" : titleVersion);
             return decryptedContent;
         }
-
-        private Ticket DownloadTicket(string titleId)
-        {
-            if (!CheckInet())
-                throw new Exception("You're not connected to the internet!");
-
-            string titleUrl = $"{nusUrl}{titleId}/";
-            byte[] tikArray = wcNus.DownloadData(titleUrl + "cetk");
-
-            return Ticket.Load(tikArray);
-        }
-
-        private TMD DownloadTmd(string titleId, string titleVersion)
-        {
-            if (!CheckInet())
-                throw new Exception("You're not connected to the internet!");
-
-            string titleUrl = $"{nusUrl}{titleId}/";
-            string tmdFile = "tmd" + (string.IsNullOrEmpty(titleVersion) ? string.Empty : string.Format(".{0}", titleVersion));
-
-            byte[] tmdArray = wcNus.DownloadData(titleUrl + tmdFile);
-
-            return TMD.Load(tmdArray);
-        }
         
         /// <summary>
         /// Grabs a title from NUS, you can define several store types.

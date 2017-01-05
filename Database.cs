@@ -59,6 +59,10 @@ namespace NUS_Downloader
                     titleInfo.Name = textInfo.ToTitleCase(titleInfo.Name.ToLower().Replace('\n', ' '));
                     titleInfo.Name += $" ({titleInfo.Region})";
 
+                    char[] invalidFileChars = Path.GetInvalidFileNameChars();
+                    foreach (var invalid in invalidFileChars)
+                        titleInfo.Name = titleInfo.Name.Replace(invalid.ToString(), "");
+
                     return titleInfo;
                 }
             }
@@ -85,6 +89,10 @@ namespace NUS_Downloader
                     var textInfo = new CultureInfo("en-US", true).TextInfo;
                     titleInfo.Name = textInfo.ToTitleCase(titleInfo.Name.ToLower().Replace('\n', ' '));
                     titleInfo.Name += $" ({titleInfo.Region})";
+
+                    char[] invalidFileChars = Path.GetInvalidFileNameChars();
+                    foreach (var invalid in invalidFileChars)
+                        titleInfo.Name = titleInfo.Name.Replace(invalid.ToString(), "");
 
                     return titleInfo.Name;
                 }
